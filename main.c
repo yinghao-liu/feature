@@ -18,16 +18,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <string.h>
+#include "print.h"
 
-int main(void)
+int main(int argc,char **argv)
 {
-	struct in_addr aa;
-	unsigned char ss[16]="192.168.0.1";
-	ss[11]=ss[12]=ss[13]=ss[14]=ss[15]='\0';
-
-	aa.s_addr=ntohl(0xc0a80001);
-	if (0 == memcmp(ss,inet_ntoa(aa),16)){
-		printf("%s\n",inet_ntoa(aa));
-	}
+//	authen_common_ShowVersion(argv[0]);	
+	print();
 	return 0;
 }
