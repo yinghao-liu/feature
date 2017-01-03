@@ -19,11 +19,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
-#include "print.h"
 
 int main(int argc,char **argv)
 {
-//	authen_common_ShowVersion(argv[0]);	
-	print();
+	int arr[] = {6,7,8,9,10};
+	int *ptr = arr;
+	(*ptr++) = (*ptr++)+123;
+	printf("*ptr:%d *ptr++:%d\n",*ptr,*ptr++);
 	return 0;
 }
