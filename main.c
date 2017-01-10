@@ -19,12 +19,16 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <unistd.h>
+#include <time.h>
 
 int main(int argc,char **argv)
 {
-	int arr[] = {6,7,8,9,10};
-	int *ptr = arr;
-	(*ptr++) = (*ptr++)+123;
-	printf("*ptr:%d *ptr++:%d\n",*ptr,*ptr++);
+	time_t aa;
+	char ss[25]={0};
+	aa = time(NULL);
+	strftime(ss,20,"%Y-%m-%d,%T",localtime((time_t *)&aa));	
+	printf("login time is %s\n",ss);
+	//printf("asctime is %s\n",asctime(localtime(&aa)));
 	return 0;
 }
