@@ -1,4 +1,7 @@
+all:main slave
 main:main.c
-.PHONY:clean
+slave:slave.c
+.PHONY:clean all
+
 clean:
-	rm -rf main
+	rm -rf main slave

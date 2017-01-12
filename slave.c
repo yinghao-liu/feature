@@ -33,7 +33,7 @@ int main(int argc,char **argv)
 	shm_data *shmaddr = NULL;	//struct pointer
 	int shm_size = sizeof (shm_data);
 	ipckey = SYS_IPCSHM_KEY;
-	shmid = shmget(ipckey, shm_size, IPC_CREAT | 0666);
+	shmid = shmget(ipckey, 0,0);
 
 	if(shmid == -1)
     {
@@ -41,31 +41,22 @@ int main(int argc,char **argv)
         return -1;
     }
 
-    shmaddr = (shm_data *)shmat(shmid,0,0);
+    shmaddr = (shm_data *)shmat(shmid,NULL,0);
     if(shmaddr == (shm_data *)(~0))
     {
-        perror("attach shm error!");
+        perror("attach shm error");
         return -1;
     }
-	memset(shmaddr, 0x0, shm_size);
-	shmaddr->parray = &shmaddr->array[0];
-	shmaddr->array[0]=0;
-	shmaddr->array[1]=1;
-	shmaddr->array[2]=2;
-	shmaddr->array[3]=3;
-	shmaddr->array[4]=4;
-	shmaddr->array[5]=5;
-	shmaddr->array[6]=6;
-	shmaddr->array[7]=7;
-	printf("main shmaddr->parray point to 0 is %p\n",shmaddr->parray);
-	printf("main index %u addr is %p\n",shmaddr->array[0],&shmaddr->array[0]);
-	printf("main index %u addr is %p\n",shmaddr->array[1],&shmaddr->array[1]);
-	printf("main index %u addr is %p\n",shmaddr->array[2],&shmaddr->array[2]);
-	printf("main index %u addr is %p\n",shmaddr->array[3],&shmaddr->array[3]);
-	printf("main index %u addr is %p\n",shmaddr->array[4],&shmaddr->array[4]);
-	printf("main index %u addr is %p\n",shmaddr->array[5],&shmaddr->array[5]);
-	printf("main index %u addr is %p\n",shmaddr->array[6],&shmaddr->array[6]);
-	printf("main index %u addr is %p\n",shmaddr->array[7],&shmaddr->array[7]);
+	printf("slave shmaddr->parray point to 0 is %p\n",shmaddr->parray);
+	printf("slave index %u addr is %p\n",shmaddr->array[0],&shmaddr->array[0]);
+	printf("slave index %u addr is %p\n",shmaddr->array[1],&shmaddr->array[1]);
+	printf("slave index %u addr is %p\n",shmaddr->array[2],&shmaddr->array[2]);
+	printf("slave index %u addr is %p\n",shmaddr->array[3],&shmaddr->array[3]);
+	printf("slave index %u addr is %p\n",shmaddr->array[4],&shmaddr->array[4]);
+	printf("slave index %u addr is %p\n",shmaddr->array[5],&shmaddr->array[5]);
+	printf("slave index %u addr is %p\n",shmaddr->array[6],&shmaddr->array[6]);
+	printf("slave index %u addr is %p\n",shmaddr->array[7],&shmaddr->array[7]);
+	//printf("slave access shmaddr->array[0] via hmaddr->parray %u\n",*shmaddr->parray);
 	sleep(8);
 	shmctl(shmid,IPC_RMID,0);
 	exit(0);
