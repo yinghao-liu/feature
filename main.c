@@ -66,8 +66,9 @@ int main(int argc,char **argv)
 	printf("main index %u addr is %p\n",shmaddr->array[5],&shmaddr->array[5]);
 	printf("main index %u addr is %p\n",shmaddr->array[6],&shmaddr->array[6]);
 	printf("main index %u addr is %p\n",shmaddr->array[7],&shmaddr->array[7]);
+	shmdt(shmaddr);
 	sleep(8);
-	shmctl(shmid,IPC_RMID,0);
+	//shmctl(shmid,IPC_RMID,0);
 	exit(0);
 	return 0;
 }
