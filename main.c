@@ -20,41 +20,14 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/mman.h>
-void signal_handle(int no)
-{
-	pid_t pid;
-	pid = getpid();	
-	printf("pid %u receive signal %u\n",pid,no);
-}
 
 int main(int argc,char **argv)
 {
-	char tick;
-	pid_t pdd;
-	char *mm;
-	if(MAP_FAILED == (mm = (char *)mmap(NULL,sizeof (char),PROT_READ|PROT_WRITE,MAP_SHARED|MAP_ANONYMOUS,-1,0))){
-		perror("mmap");
-		return -1;
-	}
-	*mm=1;
-	printf("main process memory is %u\n\n",*mm);
-	//signal(SIGINT,signal_handle);
-	signal(SIGTERM,signal_handle);
-	for (tick=0;tick<5;tick++){
-		pdd = fork();
-		if (-1 == pdd ){
-			perror("fork");
-		}else if (0 == pdd){	//child process
-			printf("child #%u started pid is %u\n",tick,getpid());
-			printf("child #%u pid is %u  memory is %u before chage\n",tick,getpid(),*mm);
-			*mm=tick;
-			printf("child #%u pid is %u  memory is %u after chage\n\n",tick,getpid(),*mm);
-			while (1);
-		}else{	//father
-			sleep(1);
-			continue;	
-		}
-	}
-	sleep(5);
+	
+	int x = -123; 
+	char in[4]="aa";
+	char str[8]; 
+	snprintf(str, sizeof (str),"%s%d",in, x);
+	printf("%s\n", str);
 	return 0;
 }
