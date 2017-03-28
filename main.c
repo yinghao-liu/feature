@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 francis_hao <francis_hao@126.com>
+ * Copyright (C) 2016 francis_hao <francis_hao@126.com>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,20 +14,21 @@
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/mman.h>
 
-int main(int argc,char **argv)
+//#include <stdio.h>
+#define EE(a) #a
+int main(void)
 {
-	
-	int x = -123; 
-	char in[4]="aa";
-	char str[8]; 
-	snprintf(str, sizeof (str),"%s%d",in, x);
-	printf("%s\n", str);
+	EE("string1":"%s","string2":"%s")
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
