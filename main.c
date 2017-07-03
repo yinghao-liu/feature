@@ -15,11 +15,38 @@
  */
 
 
-//#include <stdio.h>
-#define EE(a) #a
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
+
 int main(void)
 {
-	EE("string1":"%s","string2":"%s")
+	int readfd;
+	int writefd;
+	pid_t child;
+
+	if (0 != mkfifo("fifo",0644)){
+		perror("mkfifo");
+	}
+	child = fork();
+	if (0 == child){/*child process*/
+		readfd = open("fifo", O_RDONLY);
+		if (readfd == -1){
+			perror("open for read\n");
+		}
+		printf("open for read ok, this is child\n");
+		exit(0);
+	}else if(-1 == child){/*error*/
+		perror("fork");
+	}
+	/*parents process*/
+	sleep(3);
+	writefd = open("fifo", O_WRONLY);
+	printf("open for write ok,this is parent\n");
 	return 0;
 }
 
