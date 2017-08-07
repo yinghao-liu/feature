@@ -14,39 +14,33 @@
  *
  */
 
-
 #include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
-
+char *tmp(void)
+{
+	char a=0x55;
+	printf("now in function tmp a is %u, and addr is %p\n",a,&a);
+	return &a;
+}
 int main(void)
 {
-	int readfd;
-	int writefd;
-	pid_t child;
 
-	if (0 != mkfifo("fifo",0644)){
-		perror("mkfifo");
-	}
-	child = fork();
-	if (0 == child){/*child process*/
-		readfd = open("fifo", O_RDONLY);
-		if (readfd == -1){
-			perror("open for read\n");
-		}
-		printf("open for read ok, this is child\n");
-		exit(0);
-	}else if(-1 == child){/*error*/
-		perror("fork");
-	}
-	/*parents process*/
-	sleep(3);
-	writefd = open("fifo", O_WRONLY);
-	printf("open for write ok,this is parent\n");
+	char size_1[200]={0};
+	char size_2[300]={0};
+	//char *pa=NULL;
+	//pa=tmp();
+	//printf("now in function mai a is %u, and addr is %p\n",*pa,pa);
+	printf("size_1 addr is %p,end size_1 is %p\n",size_1,&size_1[199]);
+	printf("size_2 addr is %p,end size_2 is %p\n",size_2,size_2+300-1);
+	printf("-----------\n");
+	printf("size_2[400] data is %u, and addr is %p\n",size_2[400],&size_2[400]);
+	printf("size_1[96] data is %u, and addr is %p\n",size_1[96],&size_1[96]);
+	size_1[96]=12;
+	printf("size_2[400] data is %u, and addr is %p\n",size_2[400],&size_2[400]);
+	printf("size_1[96] data is %u, and addr is %p\n",size_1[96],&size_1[96]);
+	size_2[400]=25;
+	printf("size_2[400] data is %u, and addr is %p\n",size_2[400],&size_2[400]);
+	printf("size_1[96] data is %u, and addr is %p\n",size_1[96],&size_1[96]);
+	while(1);
 	return 0;
 }
 
