@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 francis_hao <francis_hao@126.com>
+ * Copyright (C) 2017 francis_hao <francis_hao@126.com>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,41 +15,64 @@
  */
 
 #include <stdio.h>
-char *tmp(void)
-{
-	char a=0x55;
-	printf("now in function tmp a is %u, and addr is %p\n",a,&a);
-	return &a;
-}
-int main(void)
-{
+#include <sys/types.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <string.h>
 
-	char size_1[200]={0};
-	char size_2[300]={0};
-	//char *pa=NULL;
-	//pa=tmp();
-	//printf("now in function mai a is %u, and addr is %p\n",*pa,pa);
-	printf("size_1 addr is %p,end size_1 is %p\n",size_1,&size_1[199]);
-	printf("size_2 addr is %p,end size_2 is %p\n",size_2,size_2+300-1);
-	printf("-----------\n");
-	printf("size_2[400] data is %u, and addr is %p\n",size_2[400],&size_2[400]);
-	printf("size_1[96] data is %u, and addr is %p\n",size_1[96],&size_1[96]);
-	size_1[96]=12;
-	printf("size_2[400] data is %u, and addr is %p\n",size_2[400],&size_2[400]);
-	printf("size_1[96] data is %u, and addr is %p\n",size_1[96],&size_1[96]);
-	size_2[400]=25;
-	printf("size_2[400] data is %u, and addr is %p\n",size_2[400],&size_2[400]);
-	printf("size_1[96] data is %u, and addr is %p\n",size_1[96],&size_1[96]);
-	while(1);
+int main(int argc,char *argv[])
+{
+	int sock_fd;
+	int acce_fd;
+	int s;
+	size_t data_len;
+	char buff[100]={0};
+	struct addrinfo hints;
+	struct addrinfo *result,*rp;
+
+	result=rp=NULL;
+	memset(&hints, 0, sizeof (hints));
+	hints.ai_family = AF_INET;/*only IPv4*/
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = 0;
+	hints.ai_flags = AI_PASSIVE;
+
+	s = getaddrinfo(NULL, "6532", &hints, &result);
+	if (0 != s){
+		printf("getaddrinfo:%s\n",gai_strerror(s));
+		return -1;
+	}
+	for (rp=result; rp!=NULL; rp=rp->ai_next){
+		
+		sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+		if (-1 == sock_fd){
+			perror("socket");
+			continue;;
+		}
+		s = bind(sock_fd, rp->ai_addr, rp->ai_addrlen);
+		if (0 != s){
+			perror("bind");
+			close(sock_fd);
+			continue;
+		}
+		s = listen(sock_fd, 10);
+		if (0 != s){
+			perror("listen");
+			close(sock_fd);
+			continue;
+		}
+		acce_fd = accept(sock_fd, NULL, NULL);/*we do not care the peer's addr*/
+		if(-1 == acce_fd){
+			perror("accept");
+			close(sock_fd);
+			continue;
+		}
+	}
+
+	data_len = recv(acce_fd, buff, sizeof (buff), 0);
+	printf("%s\n", buff);
+	close(sock_fd);
+	freeaddrinfo(result);
+
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-

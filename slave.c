@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 francis_hao <francis_hao@126.com>
+ * Copyright (C) 2017 francis_hao <francis_hao@126.com>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,50 +15,54 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <sys/types.h>
+#include <netdb.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <string.h>
-#include <unistd.h>
-#include <time.h>
-#include <sys/shm.h>
-#include "common.h"
 
-int main(int argc,char **argv)
+int main(int argc,char *argv[])
 {
-	int shmid;
-	key_t ipckey;
-	//char *shmaddr = NULL;
-	shm_data *shmaddr = NULL;	//struct pointer
-	int shm_size = sizeof (shm_data);
-	ipckey = SYS_IPCSHM_KEY;
-	shmid = shmget(ipckey, 0,0);
+	int sock_fd;
+	int acce_fd;
+	int s;
+	size_t data_len;
+	char buff[100]={0};
+	struct addrinfo hints;
+	struct addrinfo *result,*rp;
 
-	if(shmid == -1)
-    {
-        perror("creat shm error");
-        return -1;
-    }
+	result=rp=NULL;
+	memset(&hints, 0, sizeof (hints));
+	hints.ai_family = AF_INET;/*only IPv4*/
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = 0;
 
-    shmaddr = (shm_data *)shmat(shmid,NULL,0);
-    if(shmaddr == (shm_data *)(~0))
-    {
-        perror("attach shm error");
-        return -1;
-    }
-	printf("slave shmaddr->parray point to 0 is %p\n",shmaddr->parray);
-	printf("slave index %u addr is %p\n",shmaddr->array[0],&shmaddr->array[0]);
-	printf("slave index %u addr is %p\n",shmaddr->array[1],&shmaddr->array[1]);
-	printf("slave index %u addr is %p\n",shmaddr->array[2],&shmaddr->array[2]);
-	printf("slave index %u addr is %p\n",shmaddr->array[3],&shmaddr->array[3]);
-	printf("slave index %u addr is %p\n",shmaddr->array[4],&shmaddr->array[4]);
-	printf("slave index %u addr is %p\n",shmaddr->array[5],&shmaddr->array[5]);
-	printf("slave index %u addr is %p\n",shmaddr->array[6],&shmaddr->array[6]);
-	printf("slave index %u addr is %p\n",shmaddr->array[7],&shmaddr->array[7]);
-	//printf("slave access shmaddr->array[0] via hmaddr->parray %u\n",*shmaddr->parray);
-	sleep(8);
-	shmctl(shmid,IPC_RMID,0);
-	exit(0);
+	s = getaddrinfo("192.168.183.128", "6532", &hints, &result);
+	if (0 != s){
+		printf("getaddrinfo:%s\n",gai_strerror(s));
+		return -1;
+	}
+	for (rp=result; rp!=NULL; rp=rp->ai_next){
+		
+		sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+		if (-1 == sock_fd){
+			perror("socket");
+			continue;;
+		}
+		s = connect(sock_fd, rp->ai_addr, rp->ai_addrlen);
+		if(0 != s){
+			perror("connect");
+			continue;
+		}
+		data_len = send(sock_fd, "hello", 5, 0);
+		if (-1 == data_len){
+			perror("send");
+			continue;
+		}
+
+	}
+	data_len = send(sock_fd, " world", 6, 0);
+	close(sock_fd);
+	freeaddrinfo(result);
+
 	return 0;
 }
