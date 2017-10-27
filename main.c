@@ -21,7 +21,7 @@ inline void show_version(void)
 	printf("%s\n",VERSION);
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	show_version();
 	return 0;

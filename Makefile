@@ -1,8 +1,10 @@
+NAME  = feature
 MAJOR = 0
 MINOR = 0
 REVISION = 0
-BUILD = $(shell date +%Y%m%d_%H%M%S)
-VERSION = "$(MAJOR).$(MINOR).$(REVISION).$(BUILD)"
+
+BUILD = $(shell date +%c)
+VERSION = "$(NAME) version $(MAJOR).$(MINOR).$(REVISION)\ncompiled $(BUILD)"
 
 
 CFLAGS=-g -D'VERSION=$(VERSION)'
