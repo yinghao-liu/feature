@@ -19,60 +19,26 @@
 #include <netdb.h>
 #include <sys/socket.h>
 #include <string.h>
+#include <stdlib.h>
+#include <dirent.h>
 
-int main(int argc,char *argv[])
+int main(void)
 {
-	int sock_fd;
-	int acce_fd;
-	int s;
-	size_t data_len;
-	char buff[100]={0};
-	struct addrinfo hints;
-	struct addrinfo *result,*rp;
+	struct dirent **namelist;
+	int n;
 
-	result=rp=NULL;
-	memset(&hints, 0, sizeof (hints));
-	hints.ai_family = AF_INET;/*only IPv4*/
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = 0;
-	hints.ai_flags = AI_PASSIVE;
-
-	s = getaddrinfo(NULL, "6532", &hints, &result);
-	if (0 != s){
-		printf("getaddrinfo:%s\n",gai_strerror(s));
-		return -1;
+	n = scandir(".", &namelist, NULL, alphasort);
+	if (n < 0)
+		perror("scandir");
+	else {
+		while (n--) {
+			printf("%s\n", namelist[n]->d_name);
+			free(namelist[n]);
+		}
+		free(namelist);
 	}
-	for (rp=result; rp!=NULL; rp=rp->ai_next){
-		
-		sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-		if (-1 == sock_fd){
-			perror("socket");
-			continue;;
-		}
-		s = bind(sock_fd, rp->ai_addr, rp->ai_addrlen);
-		if (0 != s){
-			perror("bind");
-			close(sock_fd);
-			continue;
-		}
-		s = listen(sock_fd, 10);
-		if (0 != s){
-			perror("listen");
-			close(sock_fd);
-			continue;
-		}
-		acce_fd = accept(sock_fd, NULL, NULL);/*we do not care the peer's addr*/
-		if(-1 == acce_fd){
-			perror("accept");
-			close(sock_fd);
-			continue;
-		}
+	while(1){
+		sleep(2);
 	}
-
-	data_len = recv(acce_fd, buff, sizeof (buff), 0);
-	printf("%s\n", buff);
-	close(sock_fd);
-	freeaddrinfo(result);
-
-	return 0;
 }
+

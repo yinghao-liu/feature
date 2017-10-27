@@ -1,6 +1,6 @@
+CFLAGS=-g
 all:main slave
 main:main.c
-	cc -g -o main main.c
 slave:slave.c
 
 clean:
