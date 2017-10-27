@@ -15,30 +15,15 @@
  */
 
 #include <stdio.h>
-#include <sys/types.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <string.h>
-#include <stdlib.h>
-#include <dirent.h>
+inline void show_version(void)
+{
+	/*VERSION is a macro, defined in Makefile*/
+	printf("%s\n",VERSION);
+}
 
 int main(void)
 {
-	struct dirent **namelist;
-	int n;
-
-	n = scandir(".", &namelist, NULL, alphasort);
-	if (n < 0)
-		perror("scandir");
-	else {
-		while (n--) {
-			printf("%s\n", namelist[n]->d_name);
-			free(namelist[n]);
-		}
-		free(namelist);
-	}
-	while(1){
-		sleep(2);
-	}
+	show_version();
+	return 0;
 }
 
