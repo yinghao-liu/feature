@@ -1,19 +1,14 @@
-NAME  = feature
-MAJOR = 0
-MINOR = 0
-REVISION = 0
+CFLAGS= -c -fpic -g
+LDFLAGS=-Wl,-rpath,.
+LIBFLAGS=-shared
 
-BUILD = $(shell date +%c)
-VERSION = "$(NAME) version $(MAJOR).$(MINOR).$(REVISION)\ncompiled $(BUILD)"
+all:main print.so
 
-
-CFLAGS=-g -D'VERSION=$(VERSION)'
-all:main slave
-main:main.c
-slave:slave.c
-
+main:main.o print.so
+	gcc -o $@ $^ $(LDFLAGS)
+print.so:print.o
+	gcc -o $@ $^ $(LIBFLAGS)
+%.o:%.c
+	gcc -o $@ $^ $(CFLAGS)
 clean:
-	rm -rf main slave *.i *.o
-
-
-.PHONY:clean all
+	@rm -rf *.o *.so main 
