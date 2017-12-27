@@ -10,56 +10,40 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <mqueue.h>
-#define NAME "test_for_mq"
+#include <stdarg.h>
 #define MAX_MQ_MSG 120
 using namespace std;
+enum debug_level{
+	FATAL = 0,
+	ERROR,
+	WARN,
+	INFO,
+	DEBUG
+};
+int log_level=0;
+#define log(level, s, ...)	\
+	__log(level, "%s:%u(%s): "s, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+void __log(int level, const char *s, ...)
+{
+	if (level > log_level){
+		return;
+	}   
+	va_list ap; 
+	va_start(ap, s); 
+	vprintf(s, ap);
+	va_end(ap);
+}
+
 int main(void)
 {
-	struct mq_attr attr;
-	memset(&attr, '\0', sizeof (attr));
-	attr.mq_maxmsg = MAX_MQ_MSG;
-	attr.mq_msgsize = sizeof (int);
-
-	string queue_name("/");	
-	queue_name += NAME;//find it in "/dev/mqueue/"
-
-	mqd_t mq_write;
-	mqd_t mq_read;
-	mq_write = mq_open(queue_name.c_str(), O_RDWR|O_CREAT, S_IRWXU, &attr);
-	if(-1 == mq_write){
-		perror("mq_open");
-		return -1;
-	}
-	mq_read = mq_open(queue_name.c_str(), O_RDWR|O_CREAT, S_IRWXU, &attr);
-	if(-1 == mq_read){
-		perror("mq_open");
-		mq_close(mq_write);
-		return -1;
-	}
-	
-	int ret;
-	for (int fd=0; fd<25; fd++){
-		ret=mq_send(mq_write, (char *)&fd, sizeof (fd), 0);
-		if (-1 == ret){
-			perror("mq_send");
-		}
-	}
-	ssize_t msg_recv;
-	int mq_msg;
-	for (int fd=0; fd<26; fd++){
-		msg_recv = mq_receive(mq_read, (char *)&mq_msg, sizeof (mq_msg), NULL);
-		if(-1 != msg_recv){
-			printf("message queue received data is %d\n", mq_msg);
-		}
-		if (fd == 20){
-			int fdd = 100;
-			mq_send(mq_write, (char *)&fdd, sizeof (fdd), 1);
-		}
-	}
-	mq_close(mq_write);
-	mq_close(mq_read);
-	mq_unlink(queue_name.c_str());
-
+	int ll=20;
+	log_level = DEBUG;
+	/*
+	 * the second argument must be the const string as below, can't be a char* pointer
+	 * there is another way to resolve that, but you should malloc memory.
+	 *
+	 * */
+	log(FATAL, "hello,%d\n",ll);
 	return 0;
 
 }
