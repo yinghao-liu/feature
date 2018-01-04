@@ -1,4 +1,5 @@
 main
 slave
+client
 *.o
 *.so
