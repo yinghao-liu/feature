@@ -1,18 +1,17 @@
 MAJOR = 2
 MINOR = 0
-REVISION = 0
-NAME  = echo_server
+REVISION = 1
+NAME  = curl_test
 
 BUILD = $(shell date +%c)
 VERSION = "$(NAME) version $(MAJOR).$(MINOR).$(REVISION)\ncompiled $(BUILD)"
 
 CPPFLAGS= -c -g
-LDFLAGS= -lrt -lpthread
+LDFLAGS= -lpthread -lcurl
 CC=g++
-all:main client
+all:main
 
-main.o response.o:CXXFLAGS += -D'VERSION=$(VERSION)' -D'NAME="$(NAME)"'
-main:main.o response.o log.o
-client:client.o
+main.o:CXXFLAGS += -D'VERSION=$(VERSION)' -D'NAME="$(NAME)"'
+main:main.o curl_builder.o
 clean:
-	@rm -rf *.o *.so main client
+	@rm -rf *.o *.so main
