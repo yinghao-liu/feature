@@ -1,4 +1,3 @@
-#include "log.h"
 #include "curl_builder.h"
 #include <curl/curl.h>
 #include <string>
