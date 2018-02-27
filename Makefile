@@ -1,7 +1,7 @@
 MAJOR = 2
-MINOR = 0
-REVISION = 2
-NAME  = parser_file
+MINOR = 1
+REVISION = 0
+NAME  = time
 
 BUILD = $(shell date +%c)
 VERSION = "$(NAME) version $(MAJOR).$(MINOR).$(REVISION)\ncompiled $(BUILD)"
