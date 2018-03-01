@@ -1,12 +1,12 @@
 MAJOR = 2
-MINOR = 1
+MINOR = 2
 REVISION = 0
-NAME  = time
+NAME  = 
 
 BUILD = $(shell date +%c)
 VERSION = "$(NAME) version $(MAJOR).$(MINOR).$(REVISION)\ncompiled $(BUILD)"
 
-CPPFLAGS= -c -g
+CPPFLAGS= -c -g -std=c++11
 #LDFLAGS= -lpthread -lcurl
 CC=g++
 all:main
