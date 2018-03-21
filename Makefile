@@ -7,7 +7,7 @@ BUILD = $(shell date +%c)
 VERSION = "$(NAME) version $(MAJOR).$(MINOR).$(REVISION)\ncompiled $(BUILD)"
 
 CPPFLAGS= -c -g -std=c++11
-#LDFLAGS= -lpthread -lcurl
+LDFLAGS= -lpthread #-lcurl
 CC=g++
 all:main
 
