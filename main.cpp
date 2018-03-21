@@ -5,27 +5,20 @@
 #include <unistd.h>
 using namespace std;
 
-void print1(void)
-{
-	for (int i=0; i<1000; i++){
-		printf("111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\n");
-		usleep(1);
-	}
-}
-void print2(void)
-{
-	for (int i=0; i<1000; i++){
-		printf("222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222\n");
-		usleep(3);
-	}
-}
 int main(void)
 {
-	thread a(print1);
-	thread b(print2);
-	
-	a.join();
-	b.join();
-	cout<<"completed"<<endl;
+	int a;
+	a=1;
+	//auto printa1 = [=]{cout<<++a<<endl; };//error: increment of read-only variable ‘a’
+	auto printa2 = [&]{cout<<++a<<endl; };
+	auto printa3 = [&](){cout<<++a<<endl; };
+	//auto printa4 = [&]()->{cout<<++a<<endl; };//error: expected type-specifier before ‘{’ token
+	auto printa5 = [&]()-> void{cout<<++a<<endl; };
+	cout<<"before lambda "<<a<<endl;;
+	printa2();
+	cout<<"after lambda "<<a<<endl;;
+	printa3();
+	printa5();
+	//printa5;//there is no effect
 	return 0;
 }
