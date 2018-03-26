@@ -1,24 +1,47 @@
 #include <iostream>
 #include <thread>
 #include <string>
-#include <stdio.h>
 #include <unistd.h>
+#include <mutex>
+#include <condition_variable>
+
 using namespace std;
+mutex mtx;
+condition_variable cv;
+int flag=0;
+
+void print_id(int id)
+{
+	unique_lock<mutex> lock(mtx, defer_lock);
+	while (1){
+		lock.lock();
+		while (flag != id){
+			cv.wait(lock);
+		}
+		//cout<<id;
+		//cout<<pthread_self()<<" ";
+		cout<<this_thread::get_id()<<" ";
+		flag++;
+		if (flag > 3){
+			flag = 1;
+			cout<<endl;
+			sleep(1);
+		}
+		cv.notify_all();
+		lock.unlock();
+	}
+}
 
 int main(void)
 {
-	int a;
-	a=1;
-	//auto printa1 = [=]{cout<<++a<<endl; };//error: increment of read-only variable ‘a’
-	auto printa2 = [&]{cout<<++a<<endl; };
-	auto printa3 = [&](){cout<<++a<<endl; };
-	//auto printa4 = [&]()->{cout<<++a<<endl; };//error: expected type-specifier before ‘{’ token
-	auto printa5 = [&]()-> void{cout<<++a<<endl; };
-	cout<<"before lambda "<<a<<endl;;
-	printa2();
-	cout<<"after lambda "<<a<<endl;;
-	printa3();
-	printa5();
-	//printa5;//there is no effect
+	thread threads[3];
+	flag=1;
+	for (int i=0; i<3; i++){
+		threads[i] = thread(print_id, i+1);
+	}
+		
+	for (auto &a : threads){
+		a.join();
+	}
 	return 0;
 }
