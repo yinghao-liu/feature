@@ -1,57 +1,55 @@
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/types.h>          /* See NOTES */
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <string.h>
-#define port 7777
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <stdexcept>
+using namespace std;
+
+vector<string> split(char delimit, const string &str)
+{
+	size_t start=0;
+	size_t end=0;
+	string sub;
+	vector<string> result;
+	while (string::npos != (end=str.find(delimit, start))){
+		sub = str.substr(start, end-start);
+		result.push_back(sub);
+		start = end+1;
+	}
+	/*the last part after the last delimit*/
+	sub = str.substr(start);
+	result.push_back(sub);
+	return result;
+}
+
 int main(void)
 {
-	int server_sock1;
-	int server_sock2;
-	struct sockaddr_in local_addr;
-
-	memset(&local_addr, 0, sizeof(local_addr));
-	local_addr.sin_family = AF_INET;
-	local_addr.sin_port = htons(port);    
-	local_addr.sin_addr.s_addr = INADDR_ANY;
-
-	server_sock1 = socket(AF_INET, SOCK_STREAM, 0);
-	if (-1 == server_sock1) {
-		perror("socket1");
+	ifstream fs;
+	fs.open("data");
+	if (!fs.is_open()){
+		cout<<"open file error"<<endl;
 		return -1;
 	}
-	server_sock2 = socket(AF_INET, SOCK_STREAM, 0);
-	if (-1 == server_sock2) {
-		perror("socket2");
-		return -1;
+	vector<string> split_line;
+
+	string line;
+	while (1){
+		getline(fs, line);
+		if (!fs.good()){
+			break;
+		}
+		split_line = split('\t', line);
+		for (auto &i : split_line){
+			cout<<i<<endl;
+		}
+		cout<<"-----------------"<<endl;
 	}
 
-	int aa=1;
-	if(-1 == setsockopt(server_sock1, SOL_SOCKET, SO_REUSEADDR, &aa, sizeof (aa))){
-	//if(-1 == setsockopt(server_sock1, SOL_SOCKET, SO_REUSEPORT, &aa, sizeof (aa))){
-		perror("setsockopt\n");
+	try{
+		//here would out_of_range
+		cout<<split_line.at(50);
+	}catch (out_of_range &err){
+		cerr<<err.what()<<endl;
 	}
-	if(-1 == setsockopt(server_sock2, SOL_SOCKET, SO_REUSEADDR, &aa, sizeof (aa))){
-	//if(-1 == setsockopt(server_sock2, SOL_SOCKET, SO_REUSEPORT, &aa, sizeof (aa))){
-		perror("setsockopt\n");
-	}
-
-	if (-1 == bind(server_sock1, (struct sockaddr*)&local_addr, sizeof (local_addr))){
-		perror("bind1");
-		close(server_sock1);
-		return -1;
-	}
-	//listen(server_sock1, 10);
-	printf("bind and listen sock1 is over\n");
-	if (-1 == bind(server_sock2, (struct sockaddr*)&local_addr, sizeof (local_addr))){
-		perror("bind2");
-		close(server_sock2);
-		return -1;
-	}
-	printf("bind sock2 is over\n");
 	return 0;
 }
 
