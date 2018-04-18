@@ -1,54 +1,71 @@
 #include <iostream>
-#include <fstream>
-#include <vector>
-#include <stdexcept>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 using namespace std;
-
-vector<string> split(char delimit, const string &str)
+#pragma pack(1)
+struct udp_head{
+	uint8_t 	type;
+	uint16_t	len;
+	char		reserve[1];
+};
+struct udp_value{
+	uint8_t	type;
+	uint8_t len;
+	char 	data[0];
+};
+#pragma pack()
+#define UDP_PORT	1813
+int listen_udp(uint16_t port)
 {
-	size_t start=0;
-	size_t end=0;
-	string sub;
-	vector<string> result;
-	while (string::npos != (end=str.find(delimit, start))){
-		sub = str.substr(start, end-start);
-		result.push_back(sub);
-		start = end+1;
+	int server_sock;
+	server_sock = socket(AF_INET, SOCK_DGRAM, 0);
+	if (-1 == server_sock){
+		perror("socket");
+		return -1;
 	}
-	/*the last part after the last delimit*/
-	sub = str.substr(start);
-	result.push_back(sub);
-	return result;
+	struct sockaddr_in local_addr;
+	memset(&local_addr, 0, sizeof(local_addr));
+	local_addr.sin_family = AF_INET;
+	local_addr.sin_port = htons(port);
+	local_addr.sin_addr.s_addr = INADDR_ANY;
+
+	if (-1 == bind(server_sock, (struct sockaddr*)&local_addr, sizeof (local_addr))){
+		perror("bind");
+		close(server_sock);
+		return -1;
+	}
+	return server_sock;
 }
+
 
 int main(void)
 {
-	ifstream fs;
-	fs.open("data");
-	if (!fs.is_open()){
-		cout<<"open file error"<<endl;
+
+	int sockfd;
+	sockfd = listen_udp(UDP_PORT);
+	if (-1 ==sockfd){
 		return -1;
 	}
-	vector<string> split_line;
-
-	string line;
-	while (1){
-		getline(fs, line);
-		if (!fs.good()){
-			break;
+	char buff[1024];
+	udp_head *head = (udp_head *)buff;
+	string data;
+	ssize_t recv_len;
+	struct sockaddr_in 	peer_sock;
+	socklen_t peer_sock_len;
+	while(1){
+		peer_sock_len = sizeof (peer_sock);
+		//If a message is too long to fit in buff, excess bytes will be discarded
+		recv_len = recvfrom(sockfd, buff, sizeof (buff), 0, (sockaddr *)&peer_sock, &peer_sock_len);
+		if (recv_len < 0){
+			perror("recvfrom");
 		}
-		split_line = split('\t', line);
-		for (auto &i : split_line){
-			cout<<i<<endl;
+		head->len = ntohs(head->len);	
+		if (4 == head->type){
+			//udp_decode(buff + sizeof (radius_head), head->len - sizeof (radius_head), ntohl(peer_sock.sin_addr.s_addr));		
 		}
-		cout<<"-----------------"<<endl;
-	}
-
-	try{
-		//here would out_of_range
-		cout<<split_line.at(50);
-	}catch (out_of_range &err){
-		cerr<<err.what()<<endl;
 	}
 	return 0;
 }
