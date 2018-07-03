@@ -12,7 +12,7 @@ CC=g++
 all:main
 
 main.o:CXXFLAGS += -D'VERSION=$(VERSION)' -D'NAME="$(NAME)"'
-main:main.o
+main:main.o member.o
 #client:client.o
 clean:
 	@rm -rf *.o *.so main
