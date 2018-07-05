@@ -1,21 +1,12 @@
 #include <iostream>
-#include <fstream>
-#include <string.h>
-#include <stdexcept>
-#include "member.h"
 using namespace std;
 
 int main(void)
 {
-	bank_account a;
-	a.show_balance();
-	a.show_num();
-
-	bank_account b;
-	b.add(10);
-	b.show_balance();
-	b.show_num();
-
+	const char *ss="wlan0     IEEE 802.11bgn  ESSID:\"123456\"";
+	char buff[200]={0};
+	sscanf(ss, "%*[^\"]\"%[^\"]", buff);
+	printf("%s\n",buff);
 	return 0;
 }
 
