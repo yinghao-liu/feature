@@ -6,9 +6,8 @@ NAME  =
 BUILD = $(shell date +%c)
 VERSION = "$(NAME) version $(MAJOR).$(MINOR).$(REVISION)\ncompiled $(BUILD)"
 
-CPPFLAGS= -c -g -std=c++11
-#LDFLAGS= -lpthread #-lcurl
-CC=g++
+CXXFLAGS= -g -std=c++11
+CC=$(CXX)
 all:main
 
 main.o:CXXFLAGS += -D'VERSION=$(VERSION)' -D'NAME="$(NAME)"'
