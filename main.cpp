@@ -1,14 +1,26 @@
 #include <iostream>
+#include <sys/vfs.h>
+#include <sys/statvfs.h> // for sdst.f_flags ST_RDONLY...
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 using namespace std;
 
 int main(void)
 {
-	char *str;
-	sprintf(str, "this is a only 5 bytes array\n");
-	printf("%s\n", str);
+	struct statfs sdst;
+	if (0 != statfs("/dev", &sdst)){
+		perror("statfs error");
+		return -1;
+	}
 
+	struct stat fst;
+	if (0 != stat("./LICENSE", &fst)){
+		perror("stat error");
+		return -1;
+	}
 
-	printf("here would not be printed\n");
 	return 0;
 }
 
