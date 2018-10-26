@@ -1,29 +1,21 @@
 #include <iostream>
-#include <sys/sendfile.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include <string>
+#include <regex>
 using namespace std;
 
 int main(void)
 {
-	ssize_t total;
-	int out_fd;
-	int in_fd;
-	in_fd = open("abc.jpg", O_RDONLY);
-	out_fd  = open("jj.jpg", O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
-	// Not specified in POSIX.1-2001, nor in other standards.
-	// sendfile() will transfer at most 0x7ffff000 (2G) bytes, returning the  number  of  bytes  actually  transferred.
-	// (This is true on both 32-bit and 64-bit systems.)
-	total = sendfile(out_fd, in_fd, NULL, 0x7ffff000);
-	if (-1 == total){
-		perror("sendfile");
+	/********more simple way to detect if match**********/
+	int n;
+	int tmp;
+	n=sscanf("2018-09-10", "%d-%d-%d", &tmp, &tmp, &tmp);
+	if (3 == n){
+		cout<<"match! n is "<<n<<endl;
 	}
-	cout<<"sendfile byte is "<<total<<endl;
-	close(out_fd);
-	close(in_fd);
-
+	/*******using c++11 regex**************/
+	if (regex_match("2018-09-10", regex("\\d{4}-\\d{2}-\\d{2}"))){
+		cout<<"match"<<endl;
+	}
 	return 0;
 }
 
