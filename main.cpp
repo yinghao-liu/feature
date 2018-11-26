@@ -1,11 +1,36 @@
 #include <iostream>
+#include <string>
 using namespace std;
-constexpr long WEEK = 7+2;
-#define WEEK_DEF 7+2
+void Throw(void)
+{
+	throw 1;
+}
+void aa_throw(void)
+{
+	Throw();
+}
+void bb_throw(void) noexcept
+{
+	Throw();
+}
 int main(void)
 {
-	cout<<WEEK * 2<<endl;
-	cout<<WEEK_DEF * 2<<endl;
+	try {
+		Throw();
+	}catch(...){
+		cout<<"catch Throw"<<endl;
+	}
+	try {
+		aa_throw();
+	}catch(...){
+		cout<<"catch aa_throw"<<endl;
+	}
+	try {
+		bb_throw(); // terminate called after throwing
+	}catch(...){
+		cout<<"catch bb_throw"<<endl;
+	}
+	cout<<"end"<<endl;
 	return 0;
 }
 
