@@ -6,7 +6,7 @@ NAME  =
 BUILD = $(shell date +%c)
 VERSION = "$(NAME) version $(MAJOR).$(MINOR).$(REVISION)\ncompiled $(BUILD)"
 
-CXXFLAGS= -c -g -std=c++11
+CXXFLAGS= -c -g -std=c++11 -fno-elide-constructors
 #LDFLAGS= -lpthread #-lcurl
 CC=$(CXX)
 all:main 
@@ -15,7 +15,7 @@ optimize:CXXFLAGS+=-O2
 optimize:main
 
 main.o:CXXFLAGS += -D'VERSION=$(VERSION)' -D'NAME="$(NAME)"'
-main:main.o client.o
+main:main.o
 
 clean:
 	rm -rf *.o *.so *.a main
