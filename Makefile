@@ -15,7 +15,7 @@ optimize:CXXFLAGS+=-O2
 optimize:main
 
 main.o:CXXFLAGS += -D'VERSION=$(VERSION)' -D'NAME="$(NAME)"'
-main:main.o
+main:main.o client.o
 
 clean:
 	rm -rf *.o *.so *.a main

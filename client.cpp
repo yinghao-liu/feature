@@ -4,9 +4,8 @@
 using namespace std;
 
 template void fun<int>(int); 
-int main(void)
+void funfun(int a)
 {
-	fun(1);
-	return 0;
+	fun(a);
 }
 
