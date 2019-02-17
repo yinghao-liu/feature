@@ -1,45 +1,58 @@
 #include <iostream>
+#include <signal.h>
+#include <string.h>
 #include <unistd.h>
-#include <limits>
-#include <sys/times.h>
+#include <time.h>
 
 using namespace std;
+
+/*hander when timer expired*/
+void timer_handle(union sigval)
+{
+    cout<<"in timer_handle"<<endl;
+}
+
 int main(void)
 {
-    struct tms times_start;
-    struct tms times_end;
-    clock_t elapse_start;
-    clock_t elapse_end;
-
-    // obtain the number of clock ticks per second
-    auto ticks = sysconf(_SC_CLK_TCK);
-
-    elapse_start = times(&times_start);
-    int op=0;
-    for (int i=0; i<20000000; i++){
-        for (int j=0; j<300; j++){
-            op++;
-        }
+    timer_t timer_id;
+    struct sigevent sev;
+    
+    sev.sigev_notify = SIGEV_THREAD;
+    sev.sigev_notify_function = timer_handle;
+    sev.sigev_notify_attributes = nullptr;
+    if (-1 == timer_create(CLOCK_REALTIME, &sev, &timer_id)){
+        perror("timer_create");
     }
-    //sleep(2);
-    elapse_end = times(&times_end);
 
-    auto clock_max = numeric_limits<clock_t>::max();
+    struct itimerspec timer_value;
+    memset(&timer_value, 0, sizeof (timer_value));
+    timer_value.it_value.tv_sec = 5;
+    if (-1 == timer_settime(timer_id, 0, &timer_value, nullptr)){
+        perror("timer_settime");
+    }
 
-    // below are the clock ticks, not second
-    auto elapse_s =  elapse_end >= elapse_start ? (elapse_end - elapse_start) : (elapse_end - elapse_start + clock_max);
-    auto times_uts = times_end.tms_utime >= times_start.tms_utime ? (times_end.tms_utime - times_start.tms_utime) : \
-                     (times_end.tms_utime - times_start.tms_utime + clock_max);
-    auto times_sts = times_end.tms_stime >= times_start.tms_stime ? (times_end.tms_stime - times_start.tms_stime) : \
-                     (times_end.tms_stime - times_start.tms_stime + clock_max);
+    /*here disarm the timer*/
+    struct itimerspec timer_zero;
+    struct itimerspec timer_old;
+    memset(&timer_zero, 0, sizeof (timer_zero));
+    memset(&timer_old, 0, sizeof (timer_old));
+    if (-1 == timer_settime(timer_id, 0, &timer_zero, &timer_old)){
+        perror("timer_settime");
+    }
+    /*sleep more than the timer's seconds*/
+    sleep(6);
 
-    cout<<"clock ticks is "<<elapse_s<<endl;
-    cout<<"user ticks is "<<times_uts<<endl;
-    cout<<"system ticks is "<<times_sts<<endl;
+    /*continue the timer*/
+    if (-1 == timer_settime(timer_id, 0, &timer_old, nullptr)){
+        perror("timer_settime");
+    }
 
-    cout<<"clock time is "<<elapse_s/(float)ticks<<" s"<<endl;
-    cout<<"user time is "<<times_uts/(float)ticks<<" s"<<endl;
-    cout<<"system time is "<<times_sts/(float)ticks<<" s"<<endl;
+    while (true){
+        sleep(1);
+        cout<<"------------"<<endl;
+    }
+    /*though will never reach*/
+    timer_delete(timer_id);
 	return 0;
 }
 

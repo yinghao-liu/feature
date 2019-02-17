@@ -8,6 +8,7 @@ VERSION = "$(NAME) version $(MAJOR).$(MINOR).$(REVISION)\ncompiled $(BUILD)"
 
 CXXFLAGS= -c -g -std=c++11 -fno-elide-constructors
 LDFLAGS= -pthread
+LDLIBS=-lrt
 CC=$(CXX)
 all:main 
 
