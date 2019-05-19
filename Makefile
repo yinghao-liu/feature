@@ -9,7 +9,7 @@ VERSION = "$(NAME) version $(MAJOR).$(MINOR).$(REVISION)\ncompiled $(BUILD)"
 CXXFLAGS= -g #-std=c++11 #-fno-elide-constructors
 #LDFLAGS= -pthread
 #LDLIBS=-lrt
-CC=$(CXX)
+#CC=$(CXX
 all:main 
 
 optimize:CXXFLAGS+=-O2
