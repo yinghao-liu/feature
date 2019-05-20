@@ -1,32 +1,15 @@
 #include <stdio.h>
-#include <unistd.h>
-void none_use(void)
+int get_bits(int raw_data)
 {
-	printf("none\n");
-}
-void waste(int a)
-{
-	float sum = 1.1;
-	if (sum >0) {
-		for (int i=0; i<900; i++)
-		{
-			sum = sum * sum;
-		}
-	} else {
-		printf("less than 0\n");
+	int bits = 0;
+	while (0 != raw_data) {
+		bits++;
+		raw_data &= (raw_data - 1);// here is the key-point
 	}
-	int i = 0;
-	if (a > 0) {
-		i++;
-	} else {
-		i++;
-	}
+	return bits;
 }
-
 int main(void)
 {
-	waste(0);
-	waste(1);
-	waste(2);
+	printf("%d\n", get_bits(0xfe));
 	return 0;
 }

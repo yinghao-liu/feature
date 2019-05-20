@@ -6,8 +6,8 @@ NAME  =
 BUILD = $(shell date +%c)
 VERSION = "$(NAME) version $(MAJOR).$(MINOR).$(REVISION)\ncompiled $(BUILD)"
 
-CXXFLAGS= -g --coverage#-std=c++11 #-fno-elide-constructors
-LDFLAGS= --coverage
+CXXFLAGS= -g#-std=c++11 #-fno-elide-constructors
+LDFLAGS=
 #LDLIBS=-lrt
 #CC=$(CXX
 all:main 
@@ -19,4 +19,4 @@ main.o:CXXFLAGS += -D'VERSION=$(VERSION)' -D'NAME="$(NAME)"'
 main:main.o
 
 clean:
-	rm -rf *.o *.so *.a main main.gc* main.cpp.gcov
+	rm -rf *.o *.so *.a main
