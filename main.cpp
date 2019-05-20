@@ -1,41 +1,32 @@
-//#include <iostream>
-#include <mcheck.h>
-#include <execinfo.h>
 #include <stdio.h>
-#include <stdlib.h>
-//using namespace std;
-
-void mcheck_exit(enum mcheck_status mstatus)
+#include <unistd.h>
+void none_use(void)
 {
-	switch (mstatus) {
-	case MCHECK_HEAD:
-		printf("Memory preceding an allocated block was clobbered\n");
-		break;
-	case MCHECK_TAIL:
-		printf("Memory following an allocated block was clobbered\n");
-		break;
-	case MCHECK_FREE:
-		printf("A block of memory was freed twice.\n");
-	}
-	void *buff[256] = {NULL};
-	char **symbols = NULL;
-	int num_of_symb = 0;
-	num_of_symb = backtrace(buff, sizeof (buff));
-	symbols = backtrace_symbols(buff, num_of_symb);
-	for (int i=0; i<num_of_symb; i++) {
-		printf("%s\n", symbols[i]);
-	}
-
-	printf("%d\n", __LINE__);
+	printf("none\n");
 }
-int main(int argc, char *argv[])
+void waste(int a)
 {
-	mcheck(mcheck_exit);
-	char *p = NULL;
-	p = (char *)malloc(100);            /* Never freed--a memory leak */
-
-	free(p);
-	free(p);
+	float sum = 1.1;
+	if (sum >0) {
+		for (int i=0; i<900; i++)
+		{
+			sum = sum * sum;
+		}
+	} else {
+		printf("less than 0\n");
+	}
+	int i = 0;
+	if (a > 0) {
+		i++;
+	} else {
+		i++;
+	}
 }
 
-
+int main(void)
+{
+	waste(0);
+	waste(1);
+	waste(2);
+	return 0;
+}
