@@ -1,6 +1,2 @@
-# test feature of language
-get_bits
-
-##Note
-
-## reference
+# test feature
+## 001 [stdbuf](001)
